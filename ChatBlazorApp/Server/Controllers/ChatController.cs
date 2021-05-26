@@ -3,8 +3,7 @@ using ChatBlazorApp.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace ChatBlazorApp.Server.Controllers
 {
@@ -22,7 +21,8 @@ namespace ChatBlazorApp.Server.Controllers
         public IEnumerable<ChatData> Get([FromRoute] string roomName)
         {
             if (previousChatArchive.Chats.ContainsKey(roomName))
-                return previousChatArchive.Chats[roomName];
+
+            return previousChatArchive.Chats[roomName];
             return new ChatData[0];
         }
     }
