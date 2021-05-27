@@ -41,16 +41,19 @@
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        hubConnection.On<string, string, string>("ReceiveMessage", (user, message, roomName) =>
         {
-            var encodedMsg = $"{user}: {message}";
-            messages.Add(encodedMsg);
-            StateHasChanged();
+            if (roomName == "room2")
+            {
+                var encodedMsg = $"{user}: {message}";
+                messages.Add(encodedMsg);
+                StateHasChanged();
+            }
         });
 
         await hubConnection.StartAsync();
 
-        previousChats = await Http.GetFromJsonAsync<ChatData[]>("Chat");
+        previousChats = await Http.GetFromJsonAsync<ChatData[]>("Chat/room2");
 
         if (previousChats != null)
         {
@@ -63,7 +66,7 @@
     }
 
     async Task Send() =>
-        await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+        await hubConnection.SendAsync("SendMessage", userInput, messageInput, "room2");
 
     public bool IsConnected =>
         hubConnection.State == HubConnectionState.Connected;

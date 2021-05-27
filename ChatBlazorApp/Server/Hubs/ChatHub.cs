@@ -16,6 +16,11 @@ namespace ChatBlazorApp.Server.Hubs
             this.previousChatArchive = previousChatArchive;
         }
 
+
+        public async Task JoinRoom(string roomName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+        }
         public async Task SendMessage(string user, string message, string roomName)
         {
             ChatData chatData = new Shared.ChatData { User = user, Message = message };
@@ -27,7 +32,7 @@ namespace ChatBlazorApp.Server.Hubs
             {
                 previousChatArchive.Chats.Add(roomName, new List<Shared.ChatData> { chatData });
             }
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.Group(roomName).SendAsync("ReceiveMessage", user, message);
         }
     }
 }
