@@ -1,4 +1,4 @@
-﻿@page "/room2"
+﻿@page "/{RoomName}"
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager NavigationManager
 @implements IDisposable
@@ -29,31 +29,34 @@
 </ul>
 
 @code {
+    [Parameter] public string RoomName { get; set; }
     private HubConnection hubConnection;
     private List<string> messages = new List<string>();
     private string userInput;
     private string messageInput;
-    private ChatData[] previousChats = null;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        //messages.Clear();
+        //userInput = "";
+        //messageInput = "";
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string, string>("ReceiveMessage", (user, message, roomName) =>
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            if (roomName == "room2")
-            {
-                var encodedMsg = $"{user}: {message}";
-                messages.Add(encodedMsg);
-                StateHasChanged();
-            }
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            StateHasChanged();
         });
 
         await hubConnection.StartAsync();
 
-        previousChats = await Http.GetFromJsonAsync<ChatData[]>("Chat/room2");
+        await hubConnection.SendAsync("JoinRoom", RoomName);
+
+        var previousChats = await Http.GetFromJsonAsync<ChatData[]>($"Chat/{RoomName}");
 
         if (previousChats != null)
         {
@@ -66,7 +69,7 @@
     }
 
     async Task Send() =>
-        await hubConnection.SendAsync("SendMessage", userInput, messageInput, "room2");
+        await hubConnection.SendAsync("SendMessage", userInput, messageInput, RoomName);
 
     public bool IsConnected =>
         hubConnection.State == HubConnectionState.Connected;
