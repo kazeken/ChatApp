@@ -1,7 +1,31 @@
 ﻿@page "/"
 
+@code{      
+    protected override void OnInitialized()
+    {
+        appState.UserName = AppState.UserName;
+        appState.Rooms.AddRange(AppState.Rooms);
+    }
+
+    private void FormSubmit()
+    {
+        AppState.UserName = appState.UserName;
+        AppState.Rooms = new List<string>();
+        AppState.Rooms.AddRange(appState.Rooms);
+
+    }
+    AppState appState = new AppState();
+
+
+}
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<EditForm Model="AppState" OnSubmit="FormSubmit">
+    <InputText @bind-Value="@AppState.UserName" />
+
+    <button type="submit">Submit Form</button>
+</EditForm>
 
 <SurveyPrompt Title="How is Blazor working for you?" />
