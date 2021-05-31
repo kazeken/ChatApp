@@ -22,8 +22,8 @@
 
 Welcome to your new app.
 
-<EditForm Model="AppState" OnSubmit="FormSubmit">
-    <InputText @bind-Value="@AppState.UserName" />
+<EditForm Model="@appState" OnSubmit="FormSubmit">
+    <InputText @bind-Value="@appState.UserName" />
 
     <button type="submit">Submit Form</button>
 </EditForm>
