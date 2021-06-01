@@ -9,5 +9,7 @@ namespace ChatBlazorApp.Client
     {
         public string UserName { get; set; }
         public List<string> Rooms { get; set; } = new List<string>();
+        public string RoomsCommaSeparated { get; set; }
+        public Action AppStateUpdated { get; set; }
     }
 }
