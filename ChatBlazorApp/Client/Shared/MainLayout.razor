@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
 
 <div class="page">
     <div class="sidebar">
@@ -15,3 +17,22 @@
         </div>
     </div>
 </div>
+
+@code { private HubConnection hubConnection;
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+           .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+        await hubConnection.SendAsync("JoinRoom", RoomName);
+    } }

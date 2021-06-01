@@ -15,7 +15,10 @@
         string[] splitArray = appState.RoomsCommaSeparated.Split(',');
 
         AppState.Rooms.AddRange(splitArray.Select(n => n.Trim()));
+        AppState.RoomsCommaSeparated = appState.RoomsCommaSeparated;
         formText = "Form submitted successfully!";
+
+        AppState.AppStateUpdated?.Invoke();
     }
     AppState appState = new AppState();
     string formText = "";
