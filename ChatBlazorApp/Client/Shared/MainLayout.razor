@@ -29,12 +29,19 @@
     {
         AppState.AppStateUpdated += async () =>
         {
-            var newRooms = AppState.Rooms.Where(n => !roomsJoined.Contains(n));
-
+            var newRooms = new List<string>();
+            foreach (var room in AppState.Rooms)
+            {
+                if(!roomsJoined.Contains(room))
+                {
+                    newRooms.Add(room);
+                }
+            }
             roomsJoined.AddRange(newRooms);
 
-            foreach (var room in newRooms )
+            foreach (var room in newRooms)
             {
+
                 await hubConnection.SendAsync("JoinRoom", room);
             }
         };
@@ -43,11 +50,17 @@
            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
            .Build();
 
-        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        hubConnection.On<string, string, string>("ReceiveMessage", (user, message, roomName) =>
         {
-            var encodedMsg = $"{user}: {message}";
-            AppState.CurrentRoom.ReceiveMessage(encodedMsg);
-            StateHasChanged();
+            if(AppState.CurrentRoom?.RoomName == roomName)
+            {
+                var encodedMsg = $"{user}: {message}";
+                AppState.CurrentRoom.ReceiveMessage(encodedMsg);
+            }
+            else
+            {
+
+            }
         });
 
         await hubConnection.StartAsync();
