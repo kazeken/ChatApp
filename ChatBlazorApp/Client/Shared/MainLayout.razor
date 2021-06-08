@@ -29,14 +29,7 @@
     {
         AppState.AppStateUpdated += async () =>
         {
-            var newRooms = new List<string>();
-            foreach (var room in AppState.Rooms)
-            {
-                if(!roomsJoined.Contains(room))
-                {
-                    newRooms.Add(room);
-                }
-            }
+            var newRooms = AppState.Rooms.Where(n => !roomsJoined.Contains(n.RoomName )).Select(n => n.RoomName).ToList();
             roomsJoined.AddRange(newRooms);
 
             foreach (var room in newRooms)
@@ -59,7 +52,12 @@
             }
             else
             {
+                var room = AppState.Rooms.FirstOrDefault(n => n.RoomName == roomName);
+                if(!string.IsNullOrEmpty(room.RoomName))
+                {
+                    room.NotificationCount++;
 
+                }
             }
         });
 

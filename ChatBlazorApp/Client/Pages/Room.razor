@@ -23,6 +23,7 @@
 </ul>
 
 @code {
+    string previousRoomName = "";
     [Parameter] public string RoomName { get; set; }
     [CascadingParameter] public HubConnection HubConnection { get; set; }
     private List<string> messages = new List<string>();
@@ -31,6 +32,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (RoomName == previousRoomName)
+            return;
+        previousRoomName = RoomName;
         messages.Clear();
         userInput = "";
         messageInput = "";

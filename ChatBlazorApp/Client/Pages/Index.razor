@@ -10,11 +10,11 @@
     private void FormSubmit()
     {
         AppState.UserName = appState.UserName;
-        AppState.Rooms = new List<string>();
+        AppState.Rooms = new List<(string,int)>();
 
         string[] splitArray = appState.RoomsCommaSeparated.Split(',');
 
-        AppState.Rooms.AddRange(splitArray.Select(n => n.Trim()));
+        AppState.Rooms.AddRange(splitArray.Select(n => (n.Trim(),0)));
         AppState.RoomsCommaSeparated = appState.RoomsCommaSeparated;
         formText = "Form submitted successfully!";
 
