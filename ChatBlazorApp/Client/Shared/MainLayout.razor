@@ -53,9 +53,12 @@
             else
             {
                 var room = AppState.Rooms.FirstOrDefault(n => n.RoomName == roomName);
-                if(!string.IsNullOrEmpty(room.RoomName))
+                Console.WriteLine("Found Room: " + room.RoomName);
+                if (!string.IsNullOrEmpty(room.RoomName))
                 {
+                    Console.WriteLine("Notification Increasing");
                     room.NotificationCount++;
+                    AppState.AppStateUpdated.Invoke();
 
                 }
             }
