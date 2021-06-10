@@ -1,7 +1,7 @@
 ﻿@page "/{RoomName}"
-@inject HttpClient Http
 @using ChatBlazorApp.Shared
 @using Microsoft.AspNetCore.SignalR.Client
+@inject HttpClient Http
 
 <p>@AppState.UserName</p>
 
@@ -25,7 +25,8 @@
 @code {
     string previousRoomName = "";
     [Parameter] public string RoomName { get; set; }
-    [CascadingParameter] public HubConnection HubConnection { get; set; }
+    [CascadingParameter] public Microsoft.AspNetCore.SignalR.Client.HubConnection HubConnection { get; set; }
+
     private List<string> messages = new List<string>();
     private string userInput;
     private string messageInput;
@@ -38,6 +39,12 @@
         messages.Clear();
         userInput = "";
         messageInput = "";
+
+        if (AppState.Rooms.ContainsKey(RoomName))
+        {
+            AppState.Rooms[RoomName] = 0;
+            AppState.AppStateUpdated?.Invoke();
+        }
 
         AppState.CurrentRoom = this;
 
@@ -53,11 +60,13 @@
         }
     }
 
-    public void ReceiveMessage (string message)
+    public void ReceiveMessage(string message)
     {
         messages.Add(message);
         StateHasChanged();
     }
+
     Task Send() =>
-         HubConnection.SendAsync("SendMessage", AppState.UserName, messageInput, RoomName);
+        HubConnection.SendAsync("SendMessage", AppState.UserName, messageInput, RoomName);
+
 }
